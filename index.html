@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let totalIngresos = 0;
+        let totalEgresos = 0;
+        let contador = 0;
+        let continuar = "si";
+
+        console.log("Registro de Gastos");
+        console.log("-----------------------");
+
+        while(continuar.toLowerCase() === 'si') {
+            let nombre_gasto = '';  
+            let tipo = '';
+            let monto_gastado = 0;
+
+            //Validar nombre de gasto:
+            while (true) {
+                nombre_gasto = prompt("Ingrese el nombre del gasto: ");
+                if (nombre_gasto && nombre_gasto.trim() !== '') {
+                    break;
+                } else {
+                    alert("Error: El nombre no puede estar vacío.");
+                }
+            }
+            //Validar tipo:
+            while (true) {
+                tipo = prompt("Ingrese el tipo (Ingreso / Egreso): ");
+                if (tipo) {
+                    tipo = tipo.trim().toLowerCase();
+                    if (tipo === 'ingreso' || tipo === 'egreso') {
+                        break;
+                    }
+                }
+                alert("Error: El tipo debe ser 'Ingreso' o 'Egreso'.");
+            }
+            //Validar monto:
+            while (true) {
+                let input = prompt("Ingrese el monto:");
+                monto_gastado = parseFloat(input);
+                if (!isNaN(monto_gastado) && monto_gastado > 0) {
+                    break;
+                } else {
+                    alert("Error: El monto debe ser un número mayor a 0.");
+                }
+            }
+            //Mostrar en la consola:
+            console.log("Nombre del movimiento: ", nombre_gasto);
+            console.log("Tipo:", tipo.charAt(0).toUpperCase() + tipo.slice(1));
+            console.log("Monto:", monto_gastado.toFixed(2));
+            console.log("");
+
+            //Acumular datos:
+            if(tipo === 'ingreso'){
+                totalIngresos += monto_gastado;
+            }else{
+                totalEgresos += monto_gastado;
+            }
+            contador++;
+
+            //Preguntar si se quiere registrar otro movimiento:
+            continuar = prompt("¿Registrar otro movimiento? (sí/no): ");
+            console.log(`¿Registrar otro movimiento? (si/no): ${continuar}`);
+            console.log("");
+        }
+        //Calculo del saldo total:
+        let saldo = totalIngresos - totalEgresos;
+
+        // Mostrar resumen final
+        console.log("Resumen Final");
+        console.log("-----------------------");
+        console.log("Total de movimientos registrados:", contador);
+        console.log("Saldo total: $" + saldo.toFixed(2));
+        console.log("");
+        console.log("Desglose por tipo:");
+        console.log("- Egresos: $" + totalEgresos.toFixed(2));
+        console.log("- Ingresos: $" + totalIngresos.toFixed(2));
+    </script>
+</body>
+</html>
