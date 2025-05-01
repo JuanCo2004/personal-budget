@@ -10,16 +10,27 @@
         let totalIngresos = 0;
         let totalEgresos = 0;
         let contador = 0;
+        let movimientos = [];
         let continuar = "si";
 
         console.log("Registro de Gastos");
         console.log("-----------------------");
 
-        while(continuar.toLowerCase() === 'si') {
+        while (continuar.toLowerCase() === 'si') {
+            registrarMovimiento();
+            continuar = prompt("¿Registrar otro movimiento? (si/no):");
+            console.log(`¿Registrar otro movimiento? (si/no): ${continuar}`);
+            console.log("");
+        }
+
+        calcularTotalSaldo();
+        mostrarResumen();
+
+        //Funciones imperativas:
+        function registrarMovimiento(){
             let nombre_gasto = '';  
             let tipo = '';
             let monto_gastado = 0;
-
             //Validar nombre de gasto:
             while (true) {
                 nombre_gasto = prompt("Ingrese el nombre del gasto: ");
@@ -50,37 +61,39 @@
                     alert("Error: El monto debe ser un número mayor a 0.");
                 }
             }
-            //Mostrar en la consola:
-            console.log("Nombre del movimiento: ", nombre_gasto);
+            //Guardar movimiento en el array:
+            movimientos.push({nombre_gasto, tipo, monto_gastado});
+
+            // Mostrar movimiento en consola
+            console.log("Nombre del movimiento:", nombre_gasto);
             console.log("Tipo:", tipo.charAt(0).toUpperCase() + tipo.slice(1));
             console.log("Monto:", monto_gastado.toFixed(2));
             console.log("");
-
-            //Acumular datos:
-            if(tipo === 'ingreso'){
-                totalIngresos += monto_gastado;
-            }else{
-                totalEgresos += monto_gastado;
-            }
-            contador++;
-
-            //Preguntar si se quiere registrar otro movimiento:
-            continuar = prompt("¿Registrar otro movimiento? (sí/no): ");
-            console.log(`¿Registrar otro movimiento? (si/no): ${continuar}`);
-            console.log("");
         }
-        //Calculo del saldo total:
-        let saldo = totalIngresos - totalEgresos;
+        function calcularTotalSaldo() {
+            totalIngresos = 0;
+            totalEgresos = 0;
 
-        // Mostrar resumen final
-        console.log("Resumen Final");
-        console.log("-----------------------");
-        console.log("Total de movimientos registrados:", contador);
-        console.log("Saldo total: $" + saldo.toFixed(2));
-        console.log("");
-        console.log("Desglose por tipo:");
-        console.log("- Egresos: $" + totalEgresos.toFixed(2));
-        console.log("- Ingresos: $" + totalIngresos.toFixed(2));
+            for (let i = 0; i < movimientos.length; i++) {
+                if (movimientos[i].tipo === 'ingreso') {
+                totalIngresos += movimientos[i].monto_gastado;
+                } else {
+                totalEgresos += movimientos[i].monto_gastado;
+                }
+            }
+        }
+        function mostrarResumen() {
+            let saldo = totalIngresos - totalEgresos;
+
+            console.log("Resumen Final");
+            console.log("-----------------------");
+            console.log("Total de movimientos registrados:", movimientos.length);
+            console.log("Saldo total: $" + saldo.toFixed(2));
+            console.log("");
+            console.log("Desglose por tipo:");
+            console.log("- Egresos: $" + totalEgresos.toFixed(2));
+            console.log("- Ingresos: $" + totalIngresos.toFixed(2));
+        }
     </script>
 </body>
 </html>
