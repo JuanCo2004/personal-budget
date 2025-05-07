@@ -1,11 +1,46 @@
 let totalIngresos = 0;
 let totalEgresos = 0;
-let contador = 0;
 let movimientos = [];
 let continuar = "si";
 
 console.log("Registro de Gastos");
 console.log("-----------------------");
+
+//Función constructora:
+function Movimiento(tipo, monto, descripcion){
+    if (!descripcion || descripcion.trim() === '') {
+        throw new Error("La descripción no puede estar vacía.");
+    }
+    tipo = tipo.trim().toLowerCase();
+    if (tipo !== 'ingreso' && tipo !== 'egreso') {
+        throw new Error("El tipo debe ser 'ingreso' o 'egreso'.");
+    }
+    if (isNaN(monto) || monto <= 0) {
+        throw new Error("El monto debe ser un número mayor a 0.");
+    }
+
+    this.nombre_gasto = descripcion;
+    this.tipo = tipo;
+    this.monto_gastado = monto;
+}
+//Método Render: agrega una tarjeta al DOM
+Movimiento.prototype.render = function() {
+    const contenedor = document.getElementById("lista-movimientos");
+    const tarjeta = document.createElement("div");
+
+    const colorFondo = this.tipo === 'ingreso' ? 'bg-green-100' : 'bg-red-100';
+
+    tarjeta.className = `p-4 my-2 rounded shadow ${colorFondo}`;
+
+    tarjeta.innerHTML = `
+        <p class="font-bold text-lg">${this.nombre_gasto}</p>
+        <p>Tipo: <span class="capitalize">${this.tipo}</span></p>
+        <p>Monto: $${this.monto_gastado.toFixed(2)}</p>
+    `;
+    
+    contenedor.appendChild(tarjeta);
+};
+
 
 while (continuar.toLowerCase() === 'si') {
     registrarMovimiento();
@@ -17,11 +52,13 @@ while (continuar.toLowerCase() === 'si') {
 calcularTotalSaldo();
 mostrarResumen();
 
-//Funciones imperativas:
+//Refactorización total del registro:
+
 function registrarMovimiento(){
     let nombre_gasto = '';  
     let tipo = '';
     let monto_gastado = 0;
+    //FUNCIONES IMPERATIVAS
     //Validar nombre de gasto:
     while (true) {
         nombre_gasto = prompt("Ingrese el nombre del gasto: ");
@@ -52,15 +89,24 @@ function registrarMovimiento(){
             alert("Error: El monto debe ser un número mayor a 0.");
         }
     }
-    //Guardar movimiento en el array:
-    movimientos.push({nombre_gasto, tipo, monto_gastado});
+    
+    try {
+        //Creo instancia del objeto Movimiento
+        //Guardar movimiento en el array:
+        const movimiento = new Movimiento(tipo, monto_gastado, nombre_gasto);
+        movimientos.push(movimiento); //Guardo el array global
+        // Mostrar movimiento en consola
+        console.log("Nombre del movimiento:", movimiento.nombre_gasto);
+        console.log("Tipo:", movimiento.tipo.charAt(0).toUpperCase() + movimiento.tipo.slice(1));
+        console.log("Monto:", movimiento.monto_gastado.toFixed(2));
+        console.log("");
 
-    // Mostrar movimiento en consola
-    console.log("Nombre del movimiento:", nombre_gasto);
-    console.log("Tipo:", tipo.charAt(0).toUpperCase() + tipo.slice(1));
-    console.log("Monto:", monto_gastado.toFixed(2));
-    console.log("");
+        movimiento.render();
+    } catch (error) {
+        alert("Error al registrar movimiento: " + error.message);
+    }
 }
+//Total
 function calcularTotalSaldo() {
     totalIngresos = 0;
     totalEgresos = 0;
@@ -73,6 +119,7 @@ function calcularTotalSaldo() {
         }
     }
 }
+//Resumen
 function mostrarResumen() {
     let saldo = totalIngresos - totalEgresos;
 
