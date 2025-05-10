@@ -23,25 +23,44 @@ function Movimiento(tipo, monto, descripcion){
     this.tipo = tipo;
     this.monto_gastado = monto;
 }
-//Método Render: agrega una tarjeta al DOM
-Movimiento.prototype.render = function() {
-    const contenedor = document.getElementById("lista-movimientos");
-    const tarjeta = document.createElement("div");
-
-    const colorFondo = this.tipo === 'ingreso' ? 'bg-green-100' : 'bg-red-100';
-
-    tarjeta.className = `p-4 my-2 rounded shadow ${colorFondo}`;
-
-    tarjeta.innerHTML = `
-        <p class="font-bold text-lg">${this.nombre_gasto}</p>
-        <p>Tipo: <span class="capitalize">${this.tipo}</span></p>
-        <p>Monto: $${this.monto_gastado.toFixed(2)}</p>
-    `;
-    
-    contenedor.appendChild(tarjeta);
+//Método mostrarConsola sin usar DOM:
+Movimiento.prototype.mostrarEnConsola = function () {
+    console.log("---- Movimiento ----");
+    console.log("Nombre:", this.nombre_gasto);
+    console.log("Tipo:", this.tipo.charAt(0).toUpperCase() + this.tipo.slice(1));
+    console.log("Monto: $" + this.monto_gastado.toFixed(2));
+    console.log("--------------------");
 };
 
+// Método: Actualizar totales
+Movimiento.prototype.recalcularTotales = function () {
+    totalIngresos = 0;
+    totalEgresos = 0;
+    for (let mov of movimientos) {
+        if (mov.tipo === 'ingreso') {
+            totalIngresos += mov.monto_gastado;
+        } else {
+            totalEgresos += mov.monto_gastado;
+        }
+    }
+    console.log(`Totales actualizados: Ingresos = $${totalIngresos.toFixed(2)} | Egresos = $${totalEgresos.toFixed(2)}`);
+};
 
+// Subclase Ingreso
+function Ingreso(monto, descripcion) {
+    Movimiento.call(this, 'ingreso', monto, descripcion);
+}
+Ingreso.prototype = Object.create(Movimiento.prototype);
+Ingreso.prototype.constructor = Ingreso;
+
+// Subclase Egreso
+function Egreso(monto, descripcion) {
+    Movimiento.call(this, 'egreso', monto, descripcion);
+}
+Egreso.prototype = Object.create(Movimiento.prototype);
+Egreso.prototype.constructor = Egreso;
+
+//Bucle principal: Registro por consola
 while (continuar.toLowerCase() === 'si') {
     registrarMovimiento();
     continuar = prompt("¿Registrar otro movimiento? (si/no):");
@@ -51,9 +70,9 @@ while (continuar.toLowerCase() === 'si') {
 
 calcularTotalSaldo();
 mostrarResumen();
+buscarMovimiento();
 
 //Refactorización total del registro:
-
 function registrarMovimiento(){
     let nombre_gasto = '';  
     let tipo = '';
@@ -96,16 +115,12 @@ function registrarMovimiento(){
         const movimiento = new Movimiento(tipo, monto_gastado, nombre_gasto);
         movimientos.push(movimiento); //Guardo el array global
         // Mostrar movimiento en consola
-        console.log("Nombre del movimiento:", movimiento.nombre_gasto);
-        console.log("Tipo:", movimiento.tipo.charAt(0).toUpperCase() + movimiento.tipo.slice(1));
-        console.log("Monto:", movimiento.monto_gastado.toFixed(2));
-        console.log("");
-
-        movimiento.render();
+        movimiento.mostrarEnConsola();
     } catch (error) {
         alert("Error al registrar movimiento: " + error.message);
     }
 }
+
 //Total
 function calcularTotalSaldo() {
     totalIngresos = 0;
@@ -119,6 +134,7 @@ function calcularTotalSaldo() {
         }
     }
 }
+
 //Resumen
 function mostrarResumen() {
     let saldo = totalIngresos - totalEgresos;
@@ -131,39 +147,41 @@ function mostrarResumen() {
     console.log("Desglose por tipo:");
     console.log("- Egresos: $" + totalEgresos.toFixed(2));
     console.log("- Ingresos: $" + totalIngresos.toFixed(2));
+
+    //Listar nombres de movimientos:
+    const nombres = movimientos.map(mov => mov.nombre_gasto);
+    console.log("Nombres de movimientos registrados: ", nombres);
+
+    //Filtrar egresos mayores a $100:
+    const egresosMayores100 = movimientos.filter(mov =>
+        mov.tipo === 'egreso' && mov.monto_gastado > 100
+    );
+
+    // Convertir tipo a "Egreso" con mayúscula:
+    const egresosFormateados = egresosMayores100.map(mov => ({
+        nombre_gasto: mov.nombre_gasto,
+        tipo: 'Egreso',
+        monto_gastado: mov.monto_gastado.toFixed(2)
+    }));
+
+    console.log("Egresos mayores a $100:");
+    console.log(egresosFormateados);
 }
-//Listar nombres de movimientos:
-const nombres = movimientos.map(mov => mov.nombre_gasto);
-console.log("Nombres de movimientos registrados: ");
-console.log(nombres);
-
-//Filtrar egresos mayores a $100:
-const egresosMayores100 = movimientos.filter(mov =>
-    mov.tipo === 'egreso' && mov.monto_gastado > 100
-);
-  
-// Convertir tipo a "Egreso" con mayúscula:
-const egresosFormateados = egresosMayores100.map(mov => ({
-    nombre_gasto: mov.nombre_gasto,
-    tipo: 'Egreso',
-    monto_gastado: mov.monto_gastado.toFixed(2)
-}));
-
-console.log("Egresos mayores a $100:");
-console.log(egresosFormateados);
 
 //Buscar movimiento por nombre:
-const nombreBuscado = prompt("Ingrese el nombre del movimiento a buscar:");
-const resultado = movimientos.find(mov => mov.nombre_gasto.toLowerCase() === nombreBuscado.toLowerCase());
+function buscarMovimiento(){
+    const nombreBuscado = prompt("Ingrese el nombre del movimiento a buscar:");
+    const resultado = movimientos.find(mov => mov.nombre_gasto.toLowerCase() === nombreBuscado.toLowerCase());
 
-console.log(`Buscar movimiento por nombre: '${nombreBuscado}'`);
-if (resultado) {
-    console.log("Resultado encontrado:");
-    console.log({
-        nombre_gasto: resultado.nombre_gasto,
-        tipo: resultado.tipo.charAt(0).toUpperCase() + resultado.tipo.slice(1),
-        monto_gastado: resultado.monto_gastado.toFixed(2)
-    });
-} else {
-    console.log("No se encontró un movimiento con ese nombre.");
+    console.log(`Buscar movimiento por nombre: '${nombreBuscado}'`);
+    if (resultado) {
+        console.log("Resultado encontrado:");
+        console.log({
+            nombre_gasto: resultado.nombre_gasto,
+            tipo: resultado.tipo.charAt(0).toUpperCase() + resultado.tipo.slice(1),
+            monto_gastado: resultado.monto_gastado.toFixed(2)
+        });
+    } else {
+        console.log("No se encontró un movimiento con ese nombre.");
+    }
 }
