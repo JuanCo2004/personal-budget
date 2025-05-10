@@ -9,7 +9,7 @@ console.log("Registro de Gastos");
 console.log("-----------------------");
 
 /*DEFINICIÓN DE CLASES Y MÉTODOS*/
-//Función constructora: Clase Base Movimiento
+//Función constructora: Para encapsular la validación y el almacenamiento de datos
 function Movimiento(tipo, monto, descripcion){
     if (!descripcion || descripcion.trim() === '') {
         throw new Error("La descripción no puede estar vacía.");
@@ -63,9 +63,6 @@ function Egreso(monto, descripcion) {
 Egreso.prototype = Object.create(Movimiento.prototype);
 Egreso.prototype.constructor = Egreso;
 
-
-
-
 /*FUNCIONES PRINCIPALES*/
 //Función Registrar movimiento: Refactorización total del registro
 function registrarMovimiento(){
@@ -103,15 +100,14 @@ function registrarMovimiento(){
             alert("Error: El monto debe ser un número mayor a 0.");
         }
     }
-    
-    try {
-        //Creo instancia del objeto Movimiento
-        //Guardar movimiento en el array:
+    //Para manejar errores sin que el programa se detenga:
+    try { //Bloque de codigo que puede fallar
+        //Creo instancia del objeto Movimiento guardo movimiento en el array:
         const movimiento = new Movimiento(tipo, monto_gastado, nombre_gasto);
         movimientos.push(movimiento); //Guardo el array global
         // Mostrar movimiento en consola:
         movimiento.mostrarEnConsola();
-    } catch (error) {
+    } catch (error) { //Si algo sale mal
         alert("Error al registrar movimiento: " + error.message);
     }
 }
