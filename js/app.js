@@ -1,12 +1,15 @@
+/*VARIABLES GLOBALES*/
 let totalIngresos = 0;
 let totalEgresos = 0;
 let movimientos = [];
 let continuar = "si";
 
+/*TÍTULO INCIAL*/
 console.log("Registro de Gastos");
 console.log("-----------------------");
 
-//Función constructora:
+/*DEFINICIÓN DE CLASES Y MÉTODOS*/
+//Función constructora: Clase Base Movimiento
 function Movimiento(tipo, monto, descripcion){
     if (!descripcion || descripcion.trim() === '') {
         throw new Error("La descripción no puede estar vacía.");
@@ -23,7 +26,7 @@ function Movimiento(tipo, monto, descripcion){
     this.tipo = tipo;
     this.monto_gastado = monto;
 }
-//Método mostrarConsola sin usar DOM:
+//Método: Mostrar en consola:
 Movimiento.prototype.mostrarEnConsola = function () {
     console.log("---- Movimiento ----");
     console.log("Nombre:", this.nombre_gasto);
@@ -60,19 +63,11 @@ function Egreso(monto, descripcion) {
 Egreso.prototype = Object.create(Movimiento.prototype);
 Egreso.prototype.constructor = Egreso;
 
-//Bucle principal: Registro por consola
-while (continuar.toLowerCase() === 'si') {
-    registrarMovimiento();
-    continuar = prompt("¿Registrar otro movimiento? (si/no):");
-    console.log(`¿Registrar otro movimiento? (si/no): ${continuar}`);
-    console.log("");
-}
 
-calcularTotalSaldo();
-mostrarResumen();
-buscarMovimiento();
 
-//Refactorización total del registro:
+
+/*FUNCIONES PRINCIPALES*/
+//Función Registrar movimiento: Refactorización total del registro
 function registrarMovimiento(){
     let nombre_gasto = '';  
     let tipo = '';
@@ -114,14 +109,14 @@ function registrarMovimiento(){
         //Guardar movimiento en el array:
         const movimiento = new Movimiento(tipo, monto_gastado, nombre_gasto);
         movimientos.push(movimiento); //Guardo el array global
-        // Mostrar movimiento en consola
+        // Mostrar movimiento en consola:
         movimiento.mostrarEnConsola();
     } catch (error) {
         alert("Error al registrar movimiento: " + error.message);
     }
 }
 
-//Total
+//Función total de saldo:
 function calcularTotalSaldo() {
     totalIngresos = 0;
     totalEgresos = 0;
@@ -135,7 +130,7 @@ function calcularTotalSaldo() {
     }
 }
 
-//Resumen
+//Función mostrar resumen:
 function mostrarResumen() {
     let saldo = totalIngresos - totalEgresos;
 
@@ -168,7 +163,7 @@ function mostrarResumen() {
     console.log(egresosFormateados);
 }
 
-//Buscar movimiento por nombre:
+//Función buscar movimiento por nombre:
 function buscarMovimiento(){
     const nombreBuscado = prompt("Ingrese el nombre del movimiento a buscar:");
     const resultado = movimientos.find(mov => mov.nombre_gasto.toLowerCase() === nombreBuscado.toLowerCase());
@@ -185,3 +180,16 @@ function buscarMovimiento(){
         console.log("No se encontró un movimiento con ese nombre.");
     }
 }
+
+/*FLUJO PRINCIPAL DEL PROGRAMA*/
+//Bucle principal: Registro por consola
+while (continuar.toLowerCase() === 'si') {
+    registrarMovimiento();
+    continuar = prompt("¿Registrar otro movimiento? (si/no):");
+    console.log(`¿Registrar otro movimiento? (si/no): ${continuar}`);
+    console.log("");
+}
+
+calcularTotalSaldo();
+mostrarResumen();
+buscarMovimiento();

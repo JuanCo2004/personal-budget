@@ -25,3 +25,19 @@ Al aplicar funciones como map(), filter() y find(), pude apreciar mayor claridad
 ## Como aplique el principio DRY:
 Apliqué el principio DRY al encapsular tareas repetitivas dentro de funciones como registrarMovimiento() y mostrarResumen(), evitando duplicar código para validaciones o salidas por consola. También, al reutilizar funciones de orden superior (map, filter, find) para distintas operaciones, logré que el código fuera más limpio y fácil de mantener, ya que los cambios solo se deben hacer en un lugar si se necesita ajustar alguna funcionalidad.
 
+## Historias de usuario para proyecto módulo 2
+### HU1: Visualización clara y estructurada de los movimientos
+Como usuario, quiero ver los movimientos registrados en un formato organizado en consola para entender fácilmente la información financiera registrada.
+
+. Criterios de Aceptación:
+- Condición 1: Cada movimiento debe mostrarse en consola con su nombre, tipo y monto claramente etiquetados.
+- Condición 2: El formato debe ser consistente entre diferentes tipos de movimiento (Ingreso/Egreso).
+- Condición 3: Al finalizar, debe mostrarse un resumen con totales de ingresos, egresos y saldo, bien delimitado visualmente.
+
+### HU2: Validación de datos antes del registro
+Como usuario, quiero que los datos del movimiento sean validados antes de registrarse para evitar errores y asegurar la integridad de la información financiera.
+
+. Criterios de Aceptación:
+- Condición 1: El monto debe ser un número mayor a 0.
+- Condición 2: La descripción no debe estar vacía ni contener solo espacios.
+- Condición 3: El tipo debe ser exactamente “ingreso” o “egreso”, sin errores ortográficos o mayúsculas innecesarias.
